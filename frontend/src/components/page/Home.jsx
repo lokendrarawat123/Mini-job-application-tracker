@@ -1,10 +1,15 @@
 import React from "react";
 import Sidebar from "../shared/Sidebar";
+import HeroSection from "../ui/HeroSection";
+import JobList from "../ui/JobList";
 
 const Home = () => {
   return (
     <>
-      <div>this is home page</div>
+      <div>
+        <HeroSection />
+        <JobList />
+      </div>
     </>
   );
 };
