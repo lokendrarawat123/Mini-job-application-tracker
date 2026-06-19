@@ -11,8 +11,7 @@ import {
 } from "lucide-react";
 import Button from "../shared/Button";
 import DeleteConfirmModal from "../shared/DeleteModal";
-
-import DetailsModal from "../shared/modal"; // 🌟 हाम्रो साझा मोडल इम्पोर्ट गरियो
+import DetailsModal from "../shared/modal";
 import {
   useDeleteApplicationMutation,
   useUpdateApplicationMutation,
@@ -23,13 +22,11 @@ import ApplicationFormModal from "./applicatonModal";
 export default function JobCard({ application }) {
   const [deleteModal, setDeleteModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [viewModal, setViewModal] = useState(false); // 🌟 View Modal को नयाँ स्टेट
+  const [viewModal, setViewModal] = useState(false);
 
-  const [deleteApplication] = useDeleteApplicationMutation();
-  const [updateApplication, { isLoading: isUpdating }] =
-    useUpdateApplicationMutation();
+  const [deleteApplication, { isLoading: isDeleting }] = useDeleteApplicationMutation();
+  const [updateApplication, { isLoading: isUpdating }] = useUpdateApplicationMutation();
 
-  // CSS Styles (पुराकै जस्तो)
   const typeStyles = {
     "full-time": "bg-emerald-50 text-emerald-700 border-emerald-200",
     "part-time": "bg-amber-50 text-amber-700 border-amber-200",
@@ -43,7 +40,6 @@ export default function JobCard({ application }) {
     rejected: "bg-rose-50 text-rose-700 border-rose-200",
   };
 
-  // --- handlers ---
   const handleUpdateSubmit = async (formData) => {
     try {
       await updateApplication({ id: application.id, data: formData }).unwrap();
@@ -55,14 +51,20 @@ export default function JobCard({ application }) {
     }
   };
 
-  // 🌟 View Modal को फुटर (क्लोज बटन मात्र)
+  const handleDelete = async () => {
+    try {
+      await deleteApplication(application.id).unwrap();
+      toast.success("Application deleted successfully!");
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to delete");
+    } finally {
+      setDeleteModal(false);
+    }
+  };
+
   const viewFooter = (
     <div className="flex justify-end">
-      <Button
-        variant="secondary"
-        onClick={() => setViewModal(false)}
-        className="!w-auto px-5"
-      >
+      <Button variant="secondary" onClick={() => setViewModal(false)} className="!w-auto px-5">
         Close
       </Button>
     </div>
@@ -70,7 +72,6 @@ export default function JobCard({ application }) {
 
   return (
     <>
-      {/* मुख्य कार्ड लेआउट (पुराकै जस्तो) */}
       <div className="group relative bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
         <div>
           <div className="space-y-1">
@@ -78,9 +79,7 @@ export default function JobCard({ application }) {
               <Building2 className="size-4 text-slate-400" />
               <span className="capitalize">{application.company_name}</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-900">
-              {application.job_title}
-            </h3>
+            <h3 className="text-lg font-bold text-slate-900">{application.job_title}</h3>
           </div>
 
           <div className="flex flex-wrap gap-2 mt-3 mb-4">
@@ -97,7 +96,6 @@ export default function JobCard({ application }) {
           </div>
         </div>
 
-        {/* कार्ड फुटर र एक्सन बटनहरू */}
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
           <div className="flex items-center gap-1">
             <Calendar className="size-3.5" />
@@ -112,37 +110,28 @@ export default function JobCard({ application }) {
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* View Details Button */}
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => setViewModal(true)} // 🌟 थिच्दा सिधै मोडल खुल्छ
+              onClick={() => setViewModal(true)}
               className="w-auto! text-slate-500 hover:text-blue-600 hover:bg-blue-50"
               title="See Details"
             >
               <Eye className="size-4" />
             </Button>
 
-            {/* Edit Button */}
-            {/* Edit Button */}
             <Button
               variant="secondary"
               size="sm"
-              // 🌟 यदि status 'rejected' छ भने बटन डिसेबल हुने
               disabled={application.status?.toLowerCase() === "rejected"}
               onClick={() => {
-                // 🌟 सुरक्षाका लागि यहाँ पनि चेक थपियो (rejected छ भने मोडल खुल्दैन)
-                if (application.status?.toLowerCase() !== "rejected") {
-                  setEditModal(true);
-                }
+                if (application.status?.toLowerCase() !== "rejected") setEditModal(true);
               }}
-              // 🌟 डिसेबल हुँदा ओपासिटी कम गर्ने र कर्सर नट-अलाउड (not-allowed) देखाउने क्लासहरू
-              className={`w-auto! text-slate-500 transition-all
-    ${
-      application.status?.toLowerCase() === "rejected"
-        ? "opacity-40 cursor-not-allowed hover:bg-transparent text-slate-400"
-        : "hover:text-amber-600 hover:bg-amber-50"
-    }`}
+              className={`w-auto! text-slate-500 transition-all ${
+                application.status?.toLowerCase() === "rejected"
+                  ? "opacity-40 cursor-not-allowed hover:bg-transparent text-slate-400"
+                  : "hover:text-amber-600 hover:bg-amber-50"
+              }`}
               title={
                 application.status?.toLowerCase() === "rejected"
                   ? "Rejected applications cannot be edited"
@@ -152,12 +141,12 @@ export default function JobCard({ application }) {
               <Edit3 className="size-4" />
             </Button>
 
-            {/* Delete Button */}
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => setDeleteModal(false)}
+              onClick={() => setDeleteModal(true)}
               className="w-auto! text-slate-500 hover:text-rose-600 hover:bg-rose-50"
+              title="Delete Application"
             >
               <Trash2 className="size-4" />
             </Button>
@@ -165,7 +154,6 @@ export default function JobCard({ application }) {
         </div>
       </div>
 
-      {/* १. EDIT MODAL */}
       <ApplicationFormModal
         isOpen={editModal}
         onClose={() => setEditModal(false)}
@@ -175,7 +163,6 @@ export default function JobCard({ application }) {
         isLoading={isUpdating}
       />
 
-      {/* 🌟 २. VIEW DETAILS MODAL */}
       <DetailsModal
         show={viewModal}
         onClose={() => setViewModal(false)}
@@ -184,18 +171,15 @@ export default function JobCard({ application }) {
         footerContent={viewFooter}
       >
         <div className="space-y-5 text-slate-700">
-          {/* कम्पनी र जब टाइटल */}
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
             <div className="text-sm font-semibold text-indigo-600 mb-1 flex items-center gap-1.5">
               <Building2 className="size-4" /> {application.company_name}
             </div>
             <h4 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-              <Briefcase className="size-5 text-slate-500" />{" "}
-              {application.job_title}
+              <Briefcase className="size-5 text-slate-500" /> {application.job_title}
             </h4>
           </div>
 
-          {/* ब्याज र मिति ग्रिड */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
@@ -223,20 +207,16 @@ export default function JobCard({ application }) {
               </span>
               <p className="font-medium text-slate-800 flex items-center gap-1.5">
                 <Calendar className="size-4 text-slate-400" />
-                {new Date(application.applied_date).toLocaleDateString(
-                  "en-US",
-                  {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  },
-                )}
+                {new Date(application.applied_date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </p>
             </div>
           </div>
 
-          {/* नोटहरू */}
           <div className="space-y-1.5 border-t border-slate-100 pt-4">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
               Notes / Reminders
@@ -246,13 +226,20 @@ export default function JobCard({ application }) {
                 {application.notes}
               </p>
             ) : (
-              <p className="text-sm italic text-slate-400">
-                No notes added for this job application.
-              </p>
+              <p className="text-sm italic text-slate-400">No notes added for this job application.</p>
             )}
           </div>
         </div>
       </DetailsModal>
+
+      <DeleteConfirmModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        companyName={application.company_name}
+        jobTitle={application.job_title}
+      />
     </>
   );
 }

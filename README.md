@@ -13,6 +13,7 @@ Mini Job Application Tracker lets you manage all your job applications in one pl
 ## Tech Stack
 
 **Frontend**
+
 - React 19
 - Vite
 - Tailwind CSS v4
@@ -22,6 +23,7 @@ Mini Job Application Tracker lets you manage all your job applications in one pl
 - Lucide React
 
 **Backend**
+
 - Node.js
 - Express v5
 - MySQL2
@@ -46,7 +48,7 @@ Make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/lokendrarawat123/Mini-job-application-tracker.git
 cd "Mini job application tracker"
 ```
 
@@ -98,13 +100,13 @@ npm install
 
 Create a `.env` file inside the `backend/` folder based on `.env.example`:
 
-| Variable         | Description                  | Example       |
-|------------------|------------------------------|---------------|
-| `PORT`           | Port the server runs on      | `5000`        |
-| `MYSQL_HOST`     | MySQL host                   | `localhost`   |
-| `MYSQL_USER`     | MySQL username               | `root`        |
-| `MYSQL_PASSWORD` | MySQL password               | `yourpassword`|
-| `MYSQL_DATABASE` | MySQL database name          | `jobtracker`  |
+| Variable         | Description             | Example        |
+| ---------------- | ----------------------- | -------------- |
+| `PORT`           | Port the server runs on | `5000`         |
+| `MYSQL_HOST`     | MySQL host              | `localhost`    |
+| `MYSQL_USER`     | MySQL username          | `root`         |
+| `MYSQL_PASSWORD` | MySQL password          | `yourpassword` |
+| `MYSQL_DATABASE` | MySQL database name     | `jobtracker`   |
 
 ---
 
@@ -140,20 +142,20 @@ No tests are currently included in this project.
 
 Base URL: `http://localhost:5000/api/application`
 
-| Method   | Endpoint                        | Description                          |
-|----------|---------------------------------|--------------------------------------|
-| `GET`    | `/get-all-application`          | Get all applications (supports `?status=` and `?search=` query params) |
-| `POST`   | `/add-application`              | Create a new application             |
-| `GET`    | `/:get-application/:id`         | Get a single application by ID       |
-| `PATCH`  | `/update-application/:id`       | Update an application by ID          |
-| `DELETE` | `/delete-application/:id`       | Delete an application by ID          |
+| Method   | Endpoint                  | Description                                                            |
+| -------- | ------------------------- | ---------------------------------------------------------------------- |
+| `GET`    | `/get-all-application`    | Get all applications (supports `?status=` and `?search=` query params) |
+| `POST`   | `/add-application`        | Create a new application                                               |
+| `GET`    | `/:get-application/:id`   | Get a single application by ID                                         |
+| `PATCH`  | `/update-application/:id` | Update an application by ID                                            |
+| `DELETE` | `/delete-application/:id` | Delete an application by ID                                            |
 
 ### Query Parameters for GET `/get-all-application`
 
-| Param    | Type   | Description                              |
-|----------|--------|------------------------------------------|
+| Param    | Type   | Description                                                      |
+| -------- | ------ | ---------------------------------------------------------------- |
 | `status` | string | Filter by status: `applied`, `interviewing`, `offer`, `rejected` |
-| `search` | string | Search by company name or job title      |
+| `search` | string | Search by company name or job title                              |
 
 ### Request Body for POST `/add-application` and PATCH `/update-application/:id`
 
@@ -169,5 +171,6 @@ Base URL: `http://localhost:5000/api/application`
 ```
 
 **Valid values:**
+
 - `job_type`: `internship`, `full-time`, `part-time`
 - `status`: `applied`, `interviewing`, `offer`, `rejected`

@@ -8,9 +8,4 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: UserRoutes,
   },
-
-  //   {
-  //     path: "*",
-  //     element: <NotFound />,
-  //   },
 ]);

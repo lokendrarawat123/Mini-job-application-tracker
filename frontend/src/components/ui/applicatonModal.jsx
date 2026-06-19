@@ -5,12 +5,11 @@ import DetailsModal from "../shared/modal";
 export default function ApplicationFormModal({
   isOpen,
   onClose,
-  mode = "update", // 'update' वा 'add'
+  mode = "update",
   initialData,
   onSubmit,
   isLoading,
 }) {
-  // आजको मितिलाई YYYY-MM-DD फर्म्याटमा निकाल्ने फङ्सन (डिफल्ट राख्नका लागि)
   const getTodayDate = () => new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
@@ -18,28 +17,23 @@ export default function ApplicationFormModal({
     job_title: "",
     job_type: "full-time",
     status: "applied",
-    applied_date: getTodayDate(), // 🌟 सुरुमै आजको मिति सेट गरेको
+    applied_date: getTodayDate(),
     notes: "",
   });
 
   useEffect(() => {
     if (mode === "update" && initialData) {
-      // यदि अपडेट मोड हो र डेटाबेसमा मिति छ भने त्यसलाई YYYY-MM-DD मा ढालेर देखाउने
       const formattedDate = initialData.applied_date
         ? new Date(initialData.applied_date).toISOString().split("T")[0]
         : getTodayDate();
-
-      setFormData({
-        ...initialData,
-        applied_date: formattedDate,
-      });
+      setFormData({ ...initialData, applied_date: formattedDate });
     } else if (mode === "add") {
       setFormData({
         company_name: "",
         job_title: "",
         job_type: "full-time",
         status: "applied",
-        applied_date: getTodayDate(), // 🌟 नयाँ थप्दा आजको मिति फिक्स बस्छ
+        applied_date: getTodayDate(),
         notes: "",
       });
     }
@@ -86,7 +80,6 @@ export default function ApplicationFormModal({
         onSubmit={handleSubmit}
         className="space-y-5 text-left max-h-[60vh] sm:max-h-none overflow-y-auto px-1 py-2"
       >
-        {/* Company Name */}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-slate-700">
             Company Name <span className="text-rose-500">*</span>
@@ -102,7 +95,6 @@ export default function ApplicationFormModal({
           />
         </div>
 
-        {/* Job Title */}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-slate-700">
             Job Title <span className="text-rose-500">*</span>
@@ -118,13 +110,9 @@ export default function ApplicationFormModal({
           />
         </div>
 
-        {/* Grid for Type, Status & Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Job Type */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-slate-700">
-              Job Type
-            </label>
+            <label className="block text-sm font-medium text-slate-700">Job Type</label>
             <select
               name="job_type"
               value={formData.job_type}
@@ -137,11 +125,8 @@ export default function ApplicationFormModal({
             </select>
           </div>
 
-          {/* Status */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-slate-700">
-              Status
-            </label>
+            <label className="block text-sm font-medium text-slate-700">Status</label>
             <select
               name="status"
               value={formData.status}
@@ -156,7 +141,6 @@ export default function ApplicationFormModal({
           </div>
         </div>
 
-        {/* 🌟 थपिएको नयाँ फिल्ड: Applied Date */}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-slate-700">
             Applied Date <span className="text-rose-500">*</span>
@@ -171,11 +155,8 @@ export default function ApplicationFormModal({
           />
         </div>
 
-        {/* Notes */}
         <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-slate-700">
-            Notes
-          </label>
+          <label className="block text-sm font-medium text-slate-700">Notes</label>
           <textarea
             name="notes"
             value={formData.notes || ""}

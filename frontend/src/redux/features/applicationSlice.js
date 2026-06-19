@@ -10,13 +10,18 @@ export const applicationApi = indexSlice.injectEndpoints({
       providesTags: ["application"],
     }),
     getAllApplication: builder.query({
-      query: () => ({
-        url: "/application/get-all-application",
-        method: "GET",
-      }),
+      query: ({ status = "", search = "" } = {}) => {
+        const params = new URLSearchParams();
+        if (status) params.append("status", status);
+        if (search) params.append("search", search);
+        const queryString = params.toString();
+        return {
+          url: `/application/get-all-application${queryString ? `?${queryString}` : ""}`,
+          method: "GET",
+        };
+      },
       providesTags: ["application"],
     }),
-
     addApplication: builder.mutation({
       query: (data) => ({
         url: "/application/add-application",
@@ -25,7 +30,6 @@ export const applicationApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["application"],
     }),
-    // Update Staff
     updateApplication: builder.mutation({
       query: ({ id, data }) => ({
         url: `/application/update-application/${id}`,
@@ -34,7 +38,6 @@ export const applicationApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["application"],
     }),
-    // Delete Staff
     deleteApplication: builder.mutation({
       query: (id) => ({
         url: `/application/delete-application/${id}`,
