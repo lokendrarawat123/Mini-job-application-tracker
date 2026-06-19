@@ -54,14 +54,14 @@ export default function ApplicationFormModal({
         variant="secondary"
         onClick={onClose}
         disabled={isLoading}
-        className="w-full sm:!w-auto justify-center"
+        className="w-full sm:w-auto! justify-center"
       >
         Cancel
       </Button>
       <Button
         onClick={handleSubmit}
         isLoading={isLoading}
-        className="w-full sm:!w-auto justify-center bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm whitespace-nowrap"
+        className="w-full sm:w-auto! justify-center bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm whitespace-nowrap"
       >
         {mode === "update" ? "Save Changes" : "Add Application"}
       </Button>

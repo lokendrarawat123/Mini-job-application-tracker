@@ -33,7 +33,7 @@ const DetailsModal = ({
       <div
         className={`bg-white text-left shadow-2xl transform transition-all ${sizeClasses[size]} w-full relative max-h-[90vh] flex flex-col rounded-2xl border border-gray-200/80 z-10`}
       >
-        <div className="relative bg-white border-b border-gray-100 flex-shrink-0">
+        <div className="relative bg-white border-b border-gray-100 shrink-0">
           <div className="flex items-center justify-between px-6 py-4 sm:px-8 sm:py-5">
             <div className="flex items-center space-x-3">
               <div className="w-1 h-7 bg-indigo-600 rounded-full"></div>
@@ -55,7 +55,7 @@ const DetailsModal = ({
         </div>
 
         {footerContent && (
-          <div className="bg-gray-50 px-6 py-4 sm:px-8 sm:py-4 border-t border-gray-100 flex-shrink-0 rounded-b-2xl">
+          <div className="bg-gray-50 px-6 py-4 sm:px-8 sm:py-4 border-t border-gray-100 shrink-0 rounded-b-2xl">
             {footerContent}
           </div>
         )}

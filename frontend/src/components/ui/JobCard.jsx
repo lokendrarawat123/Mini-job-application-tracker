@@ -64,7 +64,7 @@ export default function JobCard({ application }) {
 
   const viewFooter = (
     <div className="flex justify-end">
-      <Button variant="secondary" onClick={() => setViewModal(false)} className="!w-auto px-5">
+      <Button variant="secondary" onClick={() => setViewModal(false)} className="w-auto! px-5">
         Close
       </Button>
     </div>
