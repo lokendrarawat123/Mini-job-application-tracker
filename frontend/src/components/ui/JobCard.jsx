@@ -1,101 +1,258 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Calendar,
-  Briefcase,
   Building2,
-  ChevronRight,
   FileText,
+  Trash2,
+  Edit3,
+  Eye,
+  Briefcase,
+  Tag,
 } from "lucide-react";
+import Button from "../shared/Button";
+import DeleteConfirmModal from "../shared/DeleteModal";
+
+import DetailsModal from "../shared/modal"; // 🌟 हाम्रो साझा मोडल इम्पोर्ट गरियो
+import {
+  useDeleteApplicationMutation,
+  useUpdateApplicationMutation,
+} from "../../redux/features/applicationSlice";
+import { toast } from "react-toastify";
+import ApplicationFormModal from "./applicatonModal";
 
 export default function JobCard({ application }) {
-  const { company_name, job_title, job_type, status, applied_date, notes } =
-    application;
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [viewModal, setViewModal] = useState(false); // 🌟 View Modal को नयाँ स्टेट
 
-  // Colors for Job Type Badges
+  const [deleteApplication] = useDeleteApplicationMutation();
+  const [updateApplication, { isLoading: isUpdating }] =
+    useUpdateApplicationMutation();
+
+  // CSS Styles (पुराकै जस्तो)
   const typeStyles = {
-    "Full-time":
-      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900",
-    "Part-time":
-      "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900",
-    Internship:
-      "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-900",
+    "full-time": "bg-emerald-50 text-emerald-700 border-emerald-200",
+    "part-time": "bg-amber-50 text-amber-700 border-amber-200",
+    internship: "bg-purple-50 text-purple-700 border-purple-200",
   };
 
-  // Colors for Application Status Badges
   const statusStyles = {
-    Applied:
-      "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900",
-    Interviewing:
-      "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-400 dark:border-indigo-900",
-    Offer:
-      "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/40 dark:text-teal-400 dark:border-teal-900",
-    Rejected:
-      "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900",
+    applied: "bg-blue-50 text-blue-700 border-blue-200",
+    interviewing: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    offer: "bg-teal-50 text-teal-700 border-teal-200",
+    rejected: "bg-rose-50 text-rose-700 border-rose-200",
   };
+
+  // --- handlers ---
+  const handleUpdateSubmit = async (formData) => {
+    try {
+      await updateApplication({ id: application.id, data: formData }).unwrap();
+      toast.success(`${formData.job_title} updated successfully!`);
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update");
+    } finally {
+      setEditModal(false);
+    }
+  };
+
+  // 🌟 View Modal को फुटर (क्लोज बटन मात्र)
+  const viewFooter = (
+    <div className="flex justify-end">
+      <Button
+        variant="secondary"
+        onClick={() => setViewModal(false)}
+        className="!w-auto px-5"
+      >
+        Close
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="group relative bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between gap-4">
-      {/* CARD HEADER */}
-      <div>
-        <div className="flex items-start justify-between gap-2 mb-3">
-          {/* Company & Title */}
+    <>
+      {/* मुख्य कार्ड लेआउट (पुराकै जस्तो) */}
+      <div className="group relative bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
+        <div>
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-sm font-medium">
+            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
               <Building2 className="size-4 text-slate-400" />
-              <span>{company_name}</span>
+              <span className="capitalize">{application.company_name}</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              {job_title}
+            <h3 className="text-lg font-bold text-slate-900">
+              {application.job_title}
             </h3>
           </div>
 
-          {/* Action Arrow Icon on Hover */}
-          <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg bg-slate-50 dark:bg-neutral-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hidden sm:block">
-            <ChevronRight className="size-4" />
-          </button>
+          <div className="flex flex-wrap gap-2 mt-3 mb-4">
+            <span
+              className={`text-xs font-semibold px-2.5 py-1 rounded-md border capitalize ${typeStyles[application.job_type?.toLowerCase()] || "bg-slate-50"}`}
+            >
+              {application.job_type}
+            </span>
+            <span
+              className={`text-xs font-semibold px-2.5 py-1 rounded-md border capitalize ${statusStyles[application.status?.toLowerCase()] || "bg-slate-50"}`}
+            >
+              {application.status}
+            </span>
+          </div>
         </div>
 
-        {/* BADGES (Job Type & Status) */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-md border ${typeStyles[job_type] || "bg-slate-50 text-slate-700"}`}
-          >
-            {job_type}
-          </span>
-          <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-md border ${statusStyles[status] || "bg-slate-50 text-slate-700"}`}
-          >
-            {status}
-          </span>
-        </div>
+        {/* कार्ड फुटर र एक्सन बटनहरू */}
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
+          <div className="flex items-center gap-1">
+            <Calendar className="size-3.5" />
+            <span>
+              Applied on{" "}
+              {new Date(application.applied_date).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          </div>
 
-        {/* NOTES SECTION (Optional) */}
-        {notes ? (
-          <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-neutral-800/50 rounded-lg p-2.5 border border-slate-100 dark:border-neutral-800/80 line-clamp-2">
-            <FileText className="size-3.5 inline mr-1 text-slate-400 align-text-bottom" />
-            {notes}
-          </p>
-        ) : (
-          <p className="text-xs italic text-slate-400 dark:text-slate-600">
-            No notes added yet.
-          </p>
-        )}
+          <div className="flex items-center gap-1.5">
+            {/* View Details Button */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setViewModal(true)} // 🌟 थिच्दा सिधै मोडल खुल्छ
+              className="w-auto! text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+              title="See Details"
+            >
+              <Eye className="size-4" />
+            </Button>
+
+            {/* Edit Button */}
+            {/* Edit Button */}
+            <Button
+              variant="secondary"
+              size="sm"
+              // 🌟 यदि status 'rejected' छ भने बटन डिसेबल हुने
+              disabled={application.status?.toLowerCase() === "rejected"}
+              onClick={() => {
+                // 🌟 सुरक्षाका लागि यहाँ पनि चेक थपियो (rejected छ भने मोडल खुल्दैन)
+                if (application.status?.toLowerCase() !== "rejected") {
+                  setEditModal(true);
+                }
+              }}
+              // 🌟 डिसेबल हुँदा ओपासिटी कम गर्ने र कर्सर नट-अलाउड (not-allowed) देखाउने क्लासहरू
+              className={`w-auto! text-slate-500 transition-all
+    ${
+      application.status?.toLowerCase() === "rejected"
+        ? "opacity-40 cursor-not-allowed hover:bg-transparent text-slate-400"
+        : "hover:text-amber-600 hover:bg-amber-50"
+    }`}
+              title={
+                application.status?.toLowerCase() === "rejected"
+                  ? "Rejected applications cannot be edited"
+                  : "Edit Application"
+              }
+            >
+              <Edit3 className="size-4" />
+            </Button>
+
+            {/* Delete Button */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setDeleteModal(false)}
+              className="w-auto! text-slate-500 hover:text-rose-600 hover:bg-rose-50"
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* CARD FOOTER */}
-      <div className="pt-3 border-t border-slate-100 dark:border-neutral-800 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
-        <div className="flex items-center gap-1">
-          <Calendar className="size-3.5" />
-          <span>
-            Applied on{" "}
-            {new Date(applied_date).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
+      {/* १. EDIT MODAL */}
+      <ApplicationFormModal
+        isOpen={editModal}
+        onClose={() => setEditModal(false)}
+        mode="update"
+        initialData={application}
+        onSubmit={handleUpdateSubmit}
+        isLoading={isUpdating}
+      />
+
+      {/* 🌟 २. VIEW DETAILS MODAL */}
+      <DetailsModal
+        show={viewModal}
+        onClose={() => setViewModal(false)}
+        title="Application Details"
+        size="md"
+        footerContent={viewFooter}
+      >
+        <div className="space-y-5 text-slate-700">
+          {/* कम्पनी र जब टाइटल */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="text-sm font-semibold text-indigo-600 mb-1 flex items-center gap-1.5">
+              <Building2 className="size-4" /> {application.company_name}
+            </div>
+            <h4 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <Briefcase className="size-5 text-slate-500" />{" "}
+              {application.job_title}
+            </h4>
+          </div>
+
+          {/* ब्याज र मिति ग्रिड */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                Job Type
+              </span>
+              <span
+                className={`inline-block px-3 py-1 text-xs font-semibold rounded-lg border capitalize ${typeStyles[application.job_type?.toLowerCase()] || "bg-slate-50"}`}
+              >
+                {application.job_type}
+              </span>
+            </div>
+            <div>
+              <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                Current Status
+              </span>
+              <span
+                className={`inline-block px-3 py-1 text-xs font-semibold rounded-lg border capitalize ${statusStyles[application.status?.toLowerCase()] || "bg-slate-50"}`}
+              >
+                {application.status}
+              </span>
+            </div>
+            <div className="col-span-2">
+              <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                Applied On
+              </span>
+              <p className="font-medium text-slate-800 flex items-center gap-1.5">
+                <Calendar className="size-4 text-slate-400" />
+                {new Date(application.applied_date).toLocaleDateString(
+                  "en-US",
+                  {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  },
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* नोटहरू */}
+          <div className="space-y-1.5 border-t border-slate-100 pt-4">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+              Notes / Reminders
+            </span>
+            {application.notes ? (
+              <p className="bg-slate-50 text-sm border border-slate-100 rounded-xl p-3 text-slate-600 whitespace-pre-line leading-relaxed">
+                {application.notes}
+              </p>
+            ) : (
+              <p className="text-sm italic text-slate-400">
+                No notes added for this job application.
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </DetailsModal>
+    </>
   );
 }

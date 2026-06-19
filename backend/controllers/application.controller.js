@@ -204,7 +204,7 @@ export const updateApplication = async (req, res, next) => {
       });
     }
 
-    // ६. चेक गर्ने: त्यो ID भएको एप्लिकेसन डेटाबेसमा छ कि छैन (सुरक्षित नम्बर 'applicationId' प्रयोग गर्ने)
+    // ६. चेक गर्ने: त्यो ID भएको एप्लिकेसन डेटाबेसमा छ कि छैन
     const [exist] = await db.execute(
       "SELECT * FROM applications WHERE id = ?",
       [applicationId],
@@ -215,6 +215,16 @@ export const updateApplication = async (req, res, next) => {
         success: false,
         message: "Application not found",
       });
+    }
+
+    // 🌟 मितिलाई SQL ले बुझ्ने YYYY-MM-DD मा बदल्ने लजिक
+    // नयाँ मिति आए नयाँलाई, नत्र पुरानै मितिलाई सफा पार्ने
+    const rawDate = applied_date || exist[0].applied_date;
+    let formattedDate = null;
+
+    if (rawDate) {
+      // .toISOString().split('T')[0] ले '2026-06-18T18:15...' बाट '2026-06-18' मात्र निकाल्छ
+      formattedDate = new Date(rawDate).toISOString().split("T")[0];
     }
 
     // ७. यदि सबै कुरा ठिक छ भने अपडेट गरिदिने
@@ -236,9 +246,9 @@ export const updateApplication = async (req, res, next) => {
           ? job_type.trim().toLowerCase()
           : exist[0].job_type,
         status !== undefined ? status.trim().toLowerCase() : exist[0].status,
-        applied_date || exist[0].applied_date,
+        formattedDate, // 🌟 यहाँ हामीले मिलाएको सफा मिति (YYYY-MM-DD) पठाइयो
         notes !== undefined ? (notes ? notes.trim() : null) : exist[0].notes,
-        applicationId, // यहाँ पनि 'applicationId' नम्बर पास गरिएको छ
+        applicationId,
       ],
     );
 

@@ -3,7 +3,7 @@ import { indexSlice } from "./features/indexSlice"; // तपाईंको ind
 
 const store = configureStore({
   reducer: {
-    // १. मुख्य indexSlice को रिडुसर यहाँ राख्ने
+
     [indexSlice.reducerPath]: indexSlice.reducer,
   },
   // २. indexSlice को मिडलवेयर यहाँ जोड्ने (यसले क्यासिङ र टाइमिङ म्यानेज गर्छ)

@@ -1,5 +1,5 @@
+import AddJob from "../components/page/AddJob";
 import Home from "../components/page/Home";
-import JobDashboard from "../components/page/JobDashboard";
 
 export const UserRoutes = [
   {
@@ -8,6 +8,6 @@ export const UserRoutes = [
   },
   {
     path: "add-job",
-    element: <JobDashboard />,
+    element: <AddJob />,
   },
 ];
