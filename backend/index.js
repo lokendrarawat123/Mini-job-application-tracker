@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import cors from "cors";
 import db from "./config/db_connect.js";
+import applicationRouter from "./routes/application.routes.js";
 dotenv.config();
 const app = express();
 app.use(express.json()); //it is use for the  the  json
@@ -14,6 +15,7 @@ app.use(
   }),
 );
 const port = process.env.PORT;
+app.use("/api/application", applicationRouter);
 
 try {
   db.connect();

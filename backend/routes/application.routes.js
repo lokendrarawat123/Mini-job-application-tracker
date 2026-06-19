@@ -1,22 +1,21 @@
 import express from "express";
 import {
-  getApplications,
-  getApplicationById,
   createApplication,
-  updateApplication,
   deleteApplication,
-} from "../controllers/applicationController.js";
+  getApplicationById,
+  getApplications,
+  updateApplication,
+} from "../controllers/application.controller.js";
 
 const applicationRouter = express.Router();
 
 // Routes handling /applications
-applicationRouter.route("/").get(getApplications).post(createApplication);
+applicationRouter.get("/get-all-application", getApplications);
+applicationRouter.post("/add-application", createApplication);
 
 // Routes handling /applications/:id
-router
-  .route("/:id")
-  .get(getApplicationById)
-  .patch(updateApplication)
-  .delete(deleteApplication);
+applicationRouter.get("/:get-application/:id", getApplicationById);
+applicationRouter.patch("/update-application/:id", updateApplication);
+applicationRouter.delete("/delete-application/:id", deleteApplication);
 
-export default router;
+export default applicationRouter;
