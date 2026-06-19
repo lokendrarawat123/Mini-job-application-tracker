@@ -6,7 +6,7 @@ import db from "./config/db_connect.js";
 import applicationRouter from "./routes/application.routes.js";
 dotenv.config();
 const app = express();
-app.use(express.json()); //it is use for the  the  json
+app.use(express.json());
 
 app.use(
   cors({

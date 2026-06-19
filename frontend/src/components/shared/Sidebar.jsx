@@ -11,7 +11,7 @@ const MENU_ITEMS = [
   },
   {
     path: "/add-job",
-    name: "Add Job",
+    name: "Add Application",
     icon: <PlusCircle className="size-5" />,
   },
 ];
